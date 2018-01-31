@@ -17,7 +17,7 @@ type Props = PropsWithStyles & GroupProps;
 export const groupCSS = () => paddingVertical(spacing.baseUnit * 2);
 
 const Group = (props: Props) => {
-  const { components, getStyles, children, label, ...cleanProps } = props;
+  const { components, getStyles, children, label, toggleGroup, ...cleanProps } = props;
   const { Heading } = components;
   return (
     <Li
@@ -26,19 +26,25 @@ const Group = (props: Props) => {
       css={getStyles('group', props)}
       {...cleanProps}
     >
-      <Heading getStyles={getStyles}>{label}</Heading>
+      <Heading getStyles={getStyles} onClick={toggleGroup}>{label}</Heading>
       <Ul>{children}</Ul>
     </Li>
   );
 };
 
-export const groupHeadingCSS = () => ({
+export const groupHeadingCSS = (props) => ({
   color: '#999',
   cursor: 'default',
   display: 'block',
   fontSize: '75%',
   fontWeight: '500',
   marginBottom: '0.25em',
+  cursor: props.onClick ? 'pointer' : 'default',
+  ':hover': props.onClick ? {
+    background: '#999',
+    color: '#fff',
+    fontSize: '80%',
+  } : null,
   ...paddingHorizontal(spacing.baseUnit * 3),
   textTransform: 'uppercase',
 });
@@ -47,7 +53,7 @@ export const GroupHeading = (props: any) => {
   const { getStyles, ...cleanProps } = props;
   return (
     <Strong
-      className={className('group-heading')}
+      className={className('group-heading', { 'multi': !!props.onClick })}
       css={getStyles('groupHeading', props)}
       {...cleanProps}
     />

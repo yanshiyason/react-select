@@ -120,6 +120,14 @@ export default class Home extends Component<*, State> {
             options={colourOptions}
           />
         </div>
+        <h4>Grouped Multi Select</h4>
+        <div id="cypress-multi">
+          <SelectWithValue
+            defaultValue={[colourOptions[1]]}
+            isMulti
+            options={groupedOptions}
+          />
+        </div>
       </div>
     );
   }

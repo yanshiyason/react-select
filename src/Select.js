@@ -416,6 +416,21 @@ export default class Select extends Component<Props, State> {
       }
     );
   };
+  selectValues = (newValues: OptionsType) => {
+    const { isMulti, onChange } = this.props;
+    this.setState(
+      {
+        menuIsOpen: true,
+        inputIsHidden: isMulti ? false : true,
+        ...this.buildStateForInputValue(),
+      },
+      () => {
+        if (onChange) {
+          onChange(newValues);
+        }
+      }
+    );
+  }
   removeValue = (removedValue: OptionType) => {
     const { onChange } = this.props;
     if (onChange) {
@@ -814,6 +829,28 @@ export default class Select extends Component<Props, State> {
       />
     );
   }
+  getGroupChildren(group) {
+    const { menuOptions: { render } } = this.state;
+    return render.find(i => i.key == group.key).children;
+  }
+  allOptionsSelected = options => {
+    const { selectValue } = this.state;
+
+    return options
+      .map(i => this.isOptionSelected(i, selectValue))
+      .every(isTrue => isTrue);
+  }
+  toggleGroup = group => event => {
+    const { selectValue } = this.state;
+    const children = this.getGroupChildren(group);
+
+    if (this.allOptionsSelected(children)) {
+      const unselected = selectValue.filter(i => !this.isOptionSelected(i, children));
+      this.selectValues(unselected.map(i => i.data));
+    } else {
+      this.selectValues([...children.map(i => i.data), ...selectValue]);
+    }
+  }
   renderMenu() {
     const {
       Group,
@@ -863,6 +900,7 @@ export default class Select extends Component<Props, State> {
               role="group"
               components={{ Heading: GroupHeading }}
               getStyles={this.getStyles}
+              toggleGroup={isMulti ? this.toggleGroup(group) : undefined }
               {...group}
             >
               {item.children.map(option => render(option))}
